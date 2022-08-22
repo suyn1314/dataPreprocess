@@ -18,7 +18,7 @@ from dimensionalityReduction2 import transform_data, reduce_data
 JSON2CSV -> hotelling -> dimensionalityReduction2
 
 {
-"_id":{"$oid":"5e344f09b8f09cb14ddaa673"},
+"_id":{"$oid":"5e344f09b8f09cb14ddaa673"}, 0.id
 "coolwaterin":"19.9",      1.冷卻水入口溫度
 "coolwaterout":"21.5",     2.冷卻水出口溫度
 "icewaterin":"16.8",       3.冰水入口溫度
@@ -51,7 +51,7 @@ JSON2CSV -> hotelling -> dimensionalityReduction2
 "copplcright":"0",        30.
 "timestamp":"2020-02-01 00:00:09" 31.資料存入資料庫時間
 }
-
+0時間
 1冰水入口溫度
 2冰水出口溫度
 3冷卻水入口溫度
@@ -116,10 +116,10 @@ def JSON2CSV(dirName):
             os.makedirs(save_dir)
 
         for fileName in files:
-            with open(join(dirName, folderName, fileName), 'r') as f:
+            with open(join(dirName, folderName, fileName), 'r', encoding='utf-8') as f:
                 jsonData = json.loads(f.read())
                 # 開啟輸出的 CSV 檔案
-                with open(join(save_dir, fileName.split('.')[0]+'.csv'), 'w', newline='') as csvfile:
+                with open(join(save_dir, fileName.split('.')[0]+'.csv', encoding='utf-8'), 'w', newline='') as csvfile:
                     # 建立 CSV 檔寫入器
                     writer = csv.writer(csvfile)
                     # 寫入資料
@@ -177,8 +177,11 @@ def makeUsefulData(args, dirName):
         if args.bp:
             print(filtedData.shape)
             drawPlot(filtedData, folderName)
+            
+"""          
         else:
             drawPlot2(filtedData, folderName)
+"""
 
 def filterData(args, datas, operation_num, running_time):
     '''
@@ -195,8 +198,10 @@ def filterData(args, datas, operation_num, running_time):
 
     idx_list=[]
     if args.bp:
+        #15左機低壓  18左機高壓  16左機吐出溫度  21左飽和蒸發溫度(蒸發器出口)  20左飽和冷凝溫度（冷凝器出口）19左耗電
         idx_list = [15, 18, 16, 21, 20, 19]
     else:
+        #右機低壓 9右機高壓 7右機吐出溫度 12右飽和蒸發溫度(資料缺) 11右飽和冷凝溫度 10右耗電
         idx_list = [6, 9, 7, 12, 11, 10]
     # idx_list = [16]
     values_mean = np.zeros((len(idx_list)))
@@ -207,6 +212,7 @@ def filterData(args, datas, operation_num, running_time):
 
     # 先取得第一筆資料時間
     if datas.shape[0] >0:
+        # 0時間
         current_unix = datas[0,0]
         # print(current_unix)
 
@@ -216,12 +222,16 @@ def filterData(args, datas, operation_num, running_time):
         if args.bp:
             # 左機電流
             electric_current = data[17]
+            # 左耗電
             power_current = data[19]
+            # 壓縮機頻率       
             freq = data[13]
         else:
             # 右機電流
             electric_current = data[8]
+            # 右耗電
             power_current = data[10]
+            # 壓縮機預設頻率  
             freq = 60
 
 
@@ -296,7 +306,7 @@ def drawPlot(datas, folderName):
     fig.canvas.set_window_title(folderName+'變頻')
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-
+"""
 def drawPlot2(datas, folderName):
     '''
     定頻
@@ -323,7 +333,7 @@ def drawPlot2(datas, folderName):
     fig.canvas.set_window_title(folderName+'定頻')
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-
+"""
 def Gaussianfilter(y):
 
     y = y.swapaxes(0,1)
