@@ -6,20 +6,58 @@ Created on Mon Aug 22 18:24:06 2022
 """
 import json
 import csv
-
-
+from decimal import Decimal
+import numpy as np
+import matplotlib.pyplot as plt
 
 # JSON file to CSV
 # Opening JSON file and loading the data
 # into the variable data
-line_list = []
-with open('datasets/7578_2021/0013157800087578_02.json',encoding='utf-8') as f:
+
+
+coolkw_list = []
+time_list = []
+count = -1
+with open('datasets/2020/0013157800087578_08.json',encoding='utf-8') as f:
     while True:
         
         line = f.readline()
         if not line: # 到 EOF，返回空字符串，则终止循环
             break
+        count +=1
         json_array = json.loads(line)
+
+        icewaterin  = float(json_array["icewaterin"])
+        icewaterout = float(json_array["icewaterout"])
+        kw_right = float(json_array["kw_r"])
+        kw_left = float(json_array["kw_l"])
+        time = json_array["timestamp"]
+        
+        """
+        預設冷凍能力 : 877Kw
+        出廠cop : 4.3
+        """
+        
+        """
+         冰水機流量
+         左機 1300L/min
+         右機 1200L/min
+        """
+        # 冷凍能力(kw) = (流量 * 進出水溫差(C) * 60(h/m)) / 860
+        coolkw = round((( 1300 * (icewaterin - icewaterout) * 60) / 860),2)
+        
+        """
+        coolkw_list.insert(count, coolkw)
+        time_list.insert(count, count)
+        """
+        
+        if  kw_right > 0:
+            coolkw_list.insert(count, coolkw)
+            time_list.insert(count, count)
+        elif kw_left > 0:
+            coolkw_list.insert(count, coolkw)
+            time_list.insert(count, count)
+        
         
         #t1 = 開始時間
         #t2 = 結束時間
@@ -34,7 +72,11 @@ with open('datasets/7578_2021/0013157800087578_02.json',encoding='utf-8') as f:
         #COP = 製冷能力(KW) / 消耗電力(KW) = 蒸發器入出口焓差 / 壓縮機出入口焓差
         #COP = ((t2h1 - t1h1) - (t2h3 - t1h3)) / ((t2h2 - t1h2) - (t2h1 - t1h1)) = Tc / (Th - Tc)
         
+      
         print("日期:" + json_array["timestamp"])
+        print(f'冷凍能力 kw: {coolkw} Kw')
+        
+        """
         print("冷卻水入口溫度:" + json_array["coolwaterin"] + "℃")
         print("冷卻水出口溫度:" + json_array["coolwaterout"] + "℃")
         print("冰水入口溫度:" + json_array["icewaterin"] + "℃")
@@ -45,13 +87,20 @@ with open('datasets/7578_2021/0013157800087578_02.json',encoding='utf-8') as f:
         print("右飽和蒸發溫度(Tse):" + json_array["tsctemp_l"] + "℃")
         print("左耗電(KW):" + json_array["kw_l"] + "KW")
         print("右耗電(KW): " + json_array["kw_r"] + "KW")
+        """
         
         
         
-        
-        
+#print(coolkw_list)
+#print(time_list)
 
-
+fig3 = plt.figure(figsize=(40,10),dpi=500)       
+plt.title("") # title
+plt.ylabel("Coolpower") # y label
+plt.xlabel("Time/number") # x label
+plt.plot(time_list,coolkw_list)
+plt.savefig("2020Data8.png")
+plt.show(fig3)
 
 
 

@@ -45,7 +45,8 @@ async function main(argv) {
         return;
     }
     // bank, "013137800024771"
-    const address = ["013157800087578"]
+    const address = ["013157800087594","013157800087545","013157800087578","013137800024581",
+                    "013157800214610","013137800024771","013157800087602","013137800024763"]
     // world gym, xin-dian-zhong-hua-yin-shua
     // const address = ["013137800024763","013157800087602"]
     // lin-xxx
@@ -62,8 +63,8 @@ async function main(argv) {
         let queryString = ``;
         let fileName = '';
         let currentDate = moment();
-        let minDate = moment('2019-01-10'); //10-11
-        let maxDate = moment('2019-01-11');
+        let minDate = moment('2017-01-10'); //10-11
+        let maxDate = moment('2017-01-11');
 
         while (currentDate.isAfter(minDate)) {
 

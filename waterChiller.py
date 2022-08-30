@@ -41,19 +41,20 @@ class WaterChiller:
 
 
     def getEnthalpy(self, Pc=0, Pe=0, Tsuc=0, Tdis=0, Tll=0):
+        try:
+            Tsuc = Tsuc + 273.15
+            Tdis = Tdis + 273.15
+            Tll = Tll + 273.15
+            Pc = self.pressureTranslate(Pc)
+            Pe = self.pressureTranslate(Pe)
+            h2 = PropsSI('H','T',Tdis, 'P|gas', Pc,'R134a')
+            h3 = PropsSI('H','T',Tll, 'P|liquid', Pc,'R134a')
 
-        Tsuc = Tsuc + 273.15
-        Tdis = Tdis + 273.15
-        Tll = Tll + 273.15
-        Pc = self.pressureTranslate(Pc)
-        Pe = self.pressureTranslate(Pe)
+            h4=h3
 
-        h2 = PropsSI('H','T',Tdis, 'P|gas', Pc,'R134a')
-        h3 = PropsSI('H','T',Tll, 'P|liquid', Pc,'R134a')
-
-        h4=h3
-
-        h1 = PropsSI('H','T',Tsuc, 'P', Pe,'R134a')
+            h1 = PropsSI('H','T',Tsuc, 'P', Pe,'R134a')
+        except Exception as e:
+            h1 = h2 = h3 = h4 = 0
 
 
         # plt.plot([h2, h1], [Pc, Pe])
@@ -195,12 +196,13 @@ def test():
     # Tsuc = Tsuc +273.15
     # Tdis = Tdis +273.15
     # Tll = Tll +273.15
-
+   
     wc = WaterChiller()
 
     hh=[]
     PP=[]
     for i in range(len(Pc)):
+       
         h1, h2, h3, h4 = wc.getEnthalpy(Pc[i], Pe[i], Tsuc[i], Tdis[i], Tll[i])
         hh.append([0,h1, h2, h3, h4])
         PP.append([Pc[i], Pe[i]])

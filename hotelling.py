@@ -40,17 +40,18 @@ def hotellingFilter(args,dirName):
             os.makedirs(save_dir2)
 
         for fileName in files:
+            
             df = pd.read_csv(os.path.join(dirName, folderName, fileName), encoding='utf-8')
             titles = np.array(df.columns)
             datas = df.iloc[:, :].to_numpy(dtype=float)
-
+            
             if datas.shape[0] == 0:
                 continue
 
             for row in range(datas.shape[0]):
                 dataset.append(datas[row, :])
 
-        dataset = np.array(dataset) 
+        dataset = np.array(dataset)
         saveCSV(save_dir, folderName, dataset, titles)
         dataset = hotellingTsquared(args, dataset)
         saveCSV(save_dir2, folderName, dataset, titles)
@@ -61,6 +62,7 @@ def saveCSV(save_dir, fileName, datas, titles):
         # 建立 CSV 檔寫入器
         writer = csv.writer(csvfile)
         # 寫入資料
+        print(titles)
         writer.writerow(titles)
         for data in datas:
             writer.writerow(data)
@@ -69,6 +71,7 @@ def saveCSV(save_dir, fileName, datas, titles):
 def hotellingTsquared(args, dataset):
     if args.bp:
         X = dataset[:9000,[1,2,3,4,15,16,18,19,20,21]]
+        
         X2 = dataset[:,[1,2,3,4,15,16,18,19,20,21]]
     else:
         X = dataset[:,[1,2,3,4,6,7,9,10,11,12]]
@@ -90,7 +93,7 @@ def hotellingTsquared(args, dataset):
     sx = sx/(n-1)
 
     print(X_mean.shape)
-
+    print(inv(sx))
     T_value = []
     for i in range(X2.shape[1]):
         row_v = X2[:,i:i+1]- X_mean

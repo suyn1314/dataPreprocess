@@ -82,19 +82,30 @@ def transform_data(args, dirName):
             if freq == 0:
                 print(moment.unix(datas[row, 0]),"=")
 
-            h1, h2, h3, h4 = wc.getEnthalpy(Pcd, Pev, Tevo, Thg, Tcdo)
-
-            outputData[0] = datas[row, 0]
-            outputData[1] = h1/1000
-            outputData[2] = h2/1000
-            outputData[3] = h3/1000
-            outputData[4] = (h1-h3)/(h2-h1)
-            outputData[5] = Tevwi
-            outputData[6] = Tcdwi
-            outputData[7] = operation_num
-            outputData[8] = running_time
-
-            outputDatas.append(outputData)
+            print('-------------')
+            print(Pcd)
+            print(Pev)
+            print(Tevo)
+            print(Thg)
+            print(Tcdo)
+            print('-------------')
+            if Thg != 0 and not(math.isnan(Tevo)) and not(math.isnan(Tcdo)):
+                h1, h2, h3, h4 = wc.getEnthalpy(Pcd, Pev, Tevo, Thg, Tcdo)
+                if h1 is not 0 and h2 is not 0 and h3 is not 0 and h4 is not 0:
+                    try:
+                        outputData[0] = datas[row, 0]
+                        outputData[1] = h1/1000
+                        outputData[2] = h2/1000
+                        outputData[3] = h3/1000
+                        outputData[4] = (h1-h3)/(h2-h1)
+                        outputData[5] = Tevwi
+                        outputData[6] = Tcdwi
+                        outputData[7] = operation_num
+                        outputData[8] = running_time
+                        if outputData[4] > 1 :
+                            outputDatas.append(outputData)
+                    except:
+                        pass
             row += 1
 
         outputDatas = np.array(outputDatas)
@@ -116,7 +127,7 @@ def transform_data(args, dirName):
         titles = np.array(["time", "h1", "h2", "h3", "C.O.P", "Tevwi", "Tcdwi", "operation_num", "running_time"])
 
         saveCSV(outputDatas, titles, fileName.split('.')[0])
-        drawDiagram(outputDatas, titles, fileName.split('.')[0])
+        # drawDiagram(outputDatas, titles, fileName.split('.')[0])
         
         # window_size = 0
         # numDatas = (outputDatas.shape[0])
@@ -171,7 +182,7 @@ def reduce_data(dirName):
     
 
         saveCSV(outputDatas, titles,fileName.split('.')[0]+"_v2")
-        drawDiagram(outputDatas, titles, fileName.split('.')[0])
+        # drawDiagram(outputDatas, titles, fileName.split('.')[0])
 
         # window_size = 40
         # numDatas = (outputDatas.shape[0])

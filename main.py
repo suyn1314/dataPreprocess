@@ -17,41 +17,6 @@ from dimensionalityReduction2 import transform_data, reduce_data
 """
 JSON2CSV -> hotelling -> dimensionalityReduction2
 
-{
-"_id":{"$oid":"5e344f09b8f09cb14ddaa673"}, 0.id
-"coolwaterin":"19.9",      1.冷卻水入口溫度
-"coolwaterout":"21.5",     2.冷卻水出口溫度
-"icewaterin":"16.8",       3.冰水入口溫度
-"icewaterout":"16",        4.冰水出口溫度
-"pipeouttemp_l":"22.6",    5.左機吐出溫度
-"pipeouttemp_r":"22.7",    6.右機吐出溫度
-"comphipress_l":"4.34",    7.左機高壓
-"complowpress_l":"4.32",   8.左機低壓
-"comphipress_r":"4.2",     9.右機高壓
-"complowpress_r":"4.22",  10.右機低壓
-"voltage":"37",           11.電壓
-"circuit_l":"0",          12.左機電流
-"circuit_r":"0",          13.右機電流
-"lev_l":"0",              14.左機LEV開度
-"lev_r":"0",              15.右機LEV開度 
-"compfrequency":"0",      16.壓縮機頻率
-"tsetemp_l":"17.3",       17.左飽和冷凝溫度(Tsc) 右飽和蒸發溫度(Tse)
-"tsctemp_r":"16.6",       18.左飽和蒸發溫度(Tse)
-"tsetemp_r":"16.6",       19.右飽和冷凝溫度(Tsc)
-"kw_l":"0",               20.左耗電(KW)
-"kw_r":"0",               21.右耗電(KW)
-"settemperature":"13.5",  22.冰水設定溫度
-"leftcompruntime":"10223",23.左機累計運轉時數
-"rightcompruntime":"7001",24.右機累計運轉時數
-"systemminute":"1",       25.PLC時間
-"icewateriotempset":"1",  26.
-"errorcode_1_str":"0",    27.
-"errorcode_2_str":"0",    28.
-"copplcleft":"0",         29.
-"copplcright":"0",        30.
-"timestamp":"2020-02-01 00:00:09" 31.資料存入資料庫時間
-}
-0時間
 1冰水入口溫度
 2冰水出口溫度
 3冷卻水入口溫度
@@ -74,13 +39,6 @@ JSON2CSV -> hotelling -> dimensionalityReduction2
 20左飽和冷凝溫度（冷凝器出口） %
 21左飽和蒸發溫度(蒸發器出口 假設吸入) %
 22設溫
-
-{
- "name":"PQ",
- "columns":[
-     "time","冰水入口溫度","冰水出口溫度","冷卻水入口溫度","冷卻水出口溫度","右機LEV開度Step","右機低壓","右機吐出溫度","右機電流","右機高壓","右耗電","右飽和冷凝溫度","右飽和蒸發溫度","壓縮機頻率","左機LEV開度Step","左機低壓","左機吐出溫度","左機電流","左機高壓","左耗電","左飽和冷凝溫度","左飽和蒸發溫度","設溫"],
- "values":[[1588263125,15.6,15.2,33.2,33.4,null,4.38,51.7,0,4.42,0,null,null,0,null,4.18,50.7,0,4.27,0,null,null,9]
-
 """
 
 def main():
@@ -123,10 +81,11 @@ def JSON2CSV(dirName):
             os.makedirs(save_dir)
 
         for fileName in files:
-            with open(join(dirName, folderName, fileName), 'r', encoding='utf-8') as f:
+            with open(join(dirName, folderName, fileName), 'r' ,encoding = "utf-8") as f :
+                
                 jsonData = json.loads(f.read())
                 # 開啟輸出的 CSV 檔案
-                with open(join(save_dir, fileName.split('.')[0]+'.csv', encoding='utf-8'), 'w', newline='') as csvfile:
+                with open(join(save_dir, fileName.split('.')[0]+'.csv'), 'w', newline='',  encoding = "utf-8") as csvfile:
                     # 建立 CSV 檔寫入器
                     writer = csv.writer(csvfile)
                     # 寫入資料
@@ -144,26 +103,29 @@ def makeUsefulData(args, dirName):
         files = sorted(files)
         operation_num = 1
         running_time = 0
-
+       
+        
         save_dir = join("datasets", "usefulData", folderName)
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
         for fileName in files:
             df = pd.read_csv(join(dirName, folderName, fileName))
+            
             titles = np.array(df.columns)
             datas = df.iloc[:, :].to_numpy(dtype=float)
             datas, operation_num, running_time = filterData(args, datas, operation_num, running_time)
-
+            
             # print(join(dirName, folderName, fileName), np.sum(datas[:,:],axis=0)/datas.shape[0])
             # break
-
+            print('------------------------------------')
+            print(datas.shape[0])
             # 開啟輸出的 CSV 檔案
             if datas.shape[0] > 0:
                 operation_num += 1
                 # if args.bp:
                 #     datas[:,14:-1] = meanfilter(datas[:,14:-1])
-                print(moment.unix(datas[0,0]))
+                print(datas)
+                # print(moment.unix(datas[0,0]))
                 with open(join(save_dir, fileName.split('.')[0]+'.csv'), 'w', newline='') as csvfile:
                     # 建立 CSV 檔寫入器
                     writer = csv.writer(csvfile)
@@ -183,12 +145,9 @@ def makeUsefulData(args, dirName):
 
         if args.bp:
             print(filtedData.shape)
-            drawPlot(filtedData, folderName)
-            
-"""          
+            # drawPlot(filtedData, folderName)
         else:
             drawPlot2(filtedData, folderName)
-"""
 
 def filterData(args, datas, operation_num, running_time):
     '''
@@ -199,16 +158,13 @@ def filterData(args, datas, operation_num, running_time):
     # 運轉時間
     running_time
     '''
-
     filtedData = []
 
 
     idx_list=[]
     if args.bp:
-        #15左機低壓  18左機高壓  16左機吐出溫度  21左飽和蒸發溫度(蒸發器出口)  20左飽和冷凝溫度（冷凝器出口）19左耗電
         idx_list = [15, 18, 16, 21, 20, 19]
     else:
-        #右機低壓 9右機高壓 7右機吐出溫度 12右飽和蒸發溫度(資料缺) 11右飽和冷凝溫度 10右耗電
         idx_list = [6, 9, 7, 12, 11, 10]
     # idx_list = [16]
     values_mean = np.zeros((len(idx_list)))
@@ -219,9 +175,9 @@ def filterData(args, datas, operation_num, running_time):
 
     # 先取得第一筆資料時間
     if datas.shape[0] >0:
-        # 0時間
         current_unix = datas[0,0]
         # print(current_unix)
+        
 
     for i in range(datas.shape[0]):
         data = datas[i,:]
@@ -229,16 +185,12 @@ def filterData(args, datas, operation_num, running_time):
         if args.bp:
             # 左機電流
             electric_current = data[17]
-            # 左耗電
             power_current = data[19]
-            # 壓縮機頻率       
             freq = data[13]
         else:
             # 右機電流
             electric_current = data[8]
-            # 右耗電
             power_current = data[10]
-            # 壓縮機預設頻率  
             freq = 60
 
 
@@ -313,7 +265,7 @@ def drawPlot(datas, folderName):
     fig.canvas.set_window_title(folderName+'變頻')
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-"""
+
 def drawPlot2(datas, folderName):
     '''
     定頻
@@ -340,7 +292,7 @@ def drawPlot2(datas, folderName):
     fig.canvas.set_window_title(folderName+'定頻')
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-"""
+
 def Gaussianfilter(y):
 
     y = y.swapaxes(0,1)
