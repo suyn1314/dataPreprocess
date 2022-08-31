@@ -25,6 +25,10 @@ cop_right_number = []
 cop_left_number = []
 cop_right_date = []
 cop_left_date = []
+running_time_r =[]
+running_time_l = []
+operation_num_r =[]
+operation_num_l =[]
 countR = -1
 countL = -1
 with open('datasets/2020/0013157800087578_09.json',encoding='utf-8') as f:
@@ -33,7 +37,7 @@ with open('datasets/2020/0013157800087578_09.json',encoding='utf-8') as f:
         line = f.readline()
         if not line: # 到 EOF，返回空字符串，则终止循环
             break
-        
+        operation_num = []
         json_array = json.loads(line)
         icewaterin  = float(json_array["icewaterin"])
         icewaterout = float(json_array["icewaterout"])
@@ -66,6 +70,8 @@ with open('datasets/2020/0013157800087578_09.json',encoding='utf-8') as f:
                 cop_right_list.insert(countR, cop_right)
                 cop_right_number.insert(countR, countR)
                 cop_right_date.insert(countR, time)
+                running_time_r.insert(countR, 3) #每筆資料間格3min
+                operation_num_r.insert(countR, 0)
                 print("日期:" + time)
                 print(f'冷凍能力 kw: {coolkw} Kw')
                 print(f'右耗電(KW): {kw_right} KW')
@@ -79,6 +85,8 @@ with open('datasets/2020/0013157800087578_09.json',encoding='utf-8') as f:
                 cop_left_list.insert(countL, cop_left)
                 cop_left_number.insert(countL, countL)
                 cop_left_date.insert(countL, time)
+                running_time_l.insert(countL, 3) #每筆資料間格3min
+                operation_num_l.insert(countL, 0)
                 print("日期:" + time)
                 print(f'冷凍能力 kw: {coolkw} Kw')
                 print(f'左耗電(KW): {kw_left} KW')
@@ -141,7 +149,7 @@ plt.xlabel("Time/number") # x label
 plt.plot(cop_right_number,COPr)#(x,y)
 plt.ylim([0, 5])
 plt.savefig("img/2020DataRight9.png")
-plt.show(fig1)
+
 
 #左機畫圖
 fig2 = plt.figure(figsize=(10,5),dpi=200)       
@@ -151,7 +159,7 @@ plt.xlabel("Time/number") # x label
 plt.plot(cop_left_number,COPl)
 plt.ylim([0, 5])
 plt.savefig("img/2020DataLeft9.png")
-plt.show(fig2)
+
 
 #原始數據(右)
 fig3 = plt.figure(figsize=(10,5),dpi=200)       
@@ -161,7 +169,6 @@ plt.xlabel("Time/number") # x label
 plt.plot(cop_right_number,cop_right_list)#(x,y)
 plt.ylim([0, 5])
 plt.savefig("img/2020DataOrginRight9.png")
-plt.show(fig3)
 
 #原始數據(左)
 fig4 = plt.figure(figsize=(10,5),dpi=200)       
@@ -171,17 +178,23 @@ plt.xlabel("Time/number") # x label
 plt.plot(cop_left_number,cop_left_list)
 plt.ylim([0, 5])
 plt.savefig("img/2020DataOrginLeft9.png")
-plt.show(fig4)
+
 
 #右機存檔
 rightDictionary = {"time" : cop_right_date ,
-                   "C.O.P" : COPr }
+                   "C.O.P" : COPr ,
+                   "operation_num" : operation_num_r ,
+                   "running_time" : running_time_r
+                   }
 rightCOP=pd.DataFrame(data=rightDictionary)
 rightCOP.to_csv('datasets/copData/2020copR9.csv',encoding='utf-8')
 
 #左機存檔
 leftDictionary = {"time" : cop_left_date ,
-                  "C.O.P" : COPl }
+                  "C.O.P" : COPl ,
+                  "operation_num" : operation_num_l ,
+                  "running_time" : running_time_l
+                  }
 leftCOP=pd.DataFrame(data=leftDictionary)
 leftCOP.to_csv('datasets/copData/2020copL9.csv',encoding='utf-8')
 
