@@ -1,0 +1,1 @@
+for /f %%i in ('dir /b *.json') do (ren %%i _0 %%i _ )
