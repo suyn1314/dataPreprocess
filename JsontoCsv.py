@@ -5,19 +5,16 @@ Created on Mon Aug 22 18:24:06 2022
 @author: Enor
 """
 import json
-import csv
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import interpolate
 #須安裝: pip install tsmoothie
-from tsmoothie.utils_func import sim_randomwalk
 from tsmoothie.smoother import LowessSmoother
 
 # JSON file to CSV
 # Opening JSON file and loading the data
 # into the variable data
-month = '12'
+month = '09'
 
 cop_list = [] 
 cop_number = []
@@ -121,6 +118,23 @@ COP = [float(x) for item in tR for x in item ] #刪除np.ndarray中的括號
 
 print('畫圖中....')
 #畫圖
+
+print(cop_number)
+
+fig1 , ax1 = plt.subplots(figsize=(10,5),dpi=200)
+plt.ylim([0, 5])
+plt.title("COP Data") # title
+plt.ylabel("COP") # y label
+plt.xlabel("Time 3 min/number") # x label
+
+ax2 = ax1.twinx()
+ax1.plot(cop_number, cop_list, color='tab:blue')
+ax2.plot(cop_number, COP, color='black')
+ax2.set_ylim([0, 5])
+plt.savefig(f'img/2020Data{month}.png')
+
+"""
+#平滑數據
 fig1 = plt.figure(figsize=(10,5),dpi=200)       
 plt.title("COP Data") # title
 plt.ylabel("COP") # y label
@@ -128,7 +142,6 @@ plt.xlabel("Time 3 min/number") # x label
 plt.plot(cop_number,COP)#(x,y)
 plt.ylim([0, 5])
 plt.savefig(f'img/2020Data{month}.png')
-
 
 #原始數據
 fig3 = plt.figure(figsize=(10,5),dpi=200)       
@@ -138,10 +151,12 @@ plt.xlabel("Time 3 min/number") # x label
 plt.plot(cop_number,cop_list)#(x,y)
 plt.ylim([0, 5])
 plt.savefig(f'img/2020OrginData{month}.png')
+"""
 
 print('存檔中....')
 #存檔 趨勢數據
 copDictionary = {"time" : cop_date ,
+                 "Month" : month,
                    "COP" : COP ,
                    "operation_num" : operation_num ,
                    "running_time" : running_time
@@ -151,6 +166,7 @@ copData.to_csv(f'datasets/copData/2020copData{month}.csv',encoding='utf-8')
 
 #存檔 原始數據
 copDictionary = {"time" : cop_date ,
+                 "Month" : month,
                    "COP" : cop_list ,
                    "operation_num" : operation_num ,
                    "running_time" : running_time
