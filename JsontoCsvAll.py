@@ -11,10 +11,13 @@ from scipy import interpolate
 #須安裝: pip install tsmoothie
 from tsmoothie.smoother import LowessSmoother
 import statistics
-# JSON file to CSV
 
+#開始月份
 beginMonth = 1
+#結束月份
 endMonth = 12
+
+
 totalcount = -1
 countlist=[]
 avg_list=[]
